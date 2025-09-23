@@ -17,12 +17,5 @@ COPY . .
 # Expose the port the app runs on
 EXPOSE 3000
 
-# Create a non-root user (compatible with Alpine Linux)
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nextjs -u 1001 -G nodejs
-
-# Change ownership of the app directory
-USER nextjs
-
 # Command to run the application
 CMD ["node", "index.js"]
