@@ -4,11 +4,12 @@ FROM node:18 AS builder
 # Set the working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json
+# Copy package.json and package-lock.json (if they exist)
 COPY package*.json ./
 
 # Install all dependencies including dev dependencies
-RUN npm ci
+# Use npm install instead of npm ci if package-lock.json is not available
+RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
 
 # Copy the rest of the application code
 COPY . .
