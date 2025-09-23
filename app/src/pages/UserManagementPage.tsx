@@ -4,6 +4,7 @@ import { useLanguage } from '../context/LanguageContext';
 import authService from '../services/authService';
 import userService from '../services/userService';
 import { User } from '../types';
+import ChangePasswordForm from '../components/ChangePasswordForm';
 
 const UserManagementPage: React.FC = () => {
   const { translate } = useLanguage();
@@ -12,10 +13,20 @@ const UserManagementPage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
+  // State for editing users
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [editUsername, setEditUsername] = useState<string>('');
   const [editLevel, setEditLevel] = useState<string>('');
   const [editPassword, setEditPassword] = useState<string>('');
+
+  // State for creating new users
+  const [showCreateForm, setShowCreateForm] = useState<boolean>(false);
+  const [newUsername, setNewUsername] = useState<string>('');
+  const [newPassword, setNewPassword] = useState<string>('');
+  const [newLevel, setNewLevel] = useState<string>('1');
+
+  // State for changing user passwords
+  const [changingPasswordForUser, setChangingPasswordForUser] = useState<User | null>(null);
 
   useEffect(() => {
     if (!authService.isAdmin()) {
@@ -42,6 +53,8 @@ const UserManagementPage: React.FC = () => {
     setEditUsername(user.username);
     setEditLevel(user.level.toString());
     setEditPassword(''); // Clear password field when editing
+    setChangingPasswordForUser(null); // Close password change form if open
+    setShowCreateForm(false); // Close create form if open
   };
 
   const handleUpdateUser = async (e: React.FormEvent) => {
@@ -77,6 +90,27 @@ const UserManagementPage: React.FC = () => {
     }
   };
 
+  // New function to handle creating users
+  const handleCreateUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await userService.createUser({
+        username: newUsername,
+        password: newPassword,
+        level: parseInt(newLevel),
+      });
+      // Reset form fields
+      setNewUsername('');
+      setNewPassword('');
+      setNewLevel('1');
+      setShowCreateForm(false);
+      fetchUsers(); // Refresh users after creation
+    } catch (err: any) {
+      setError('Failed to create user.');
+      console.error('Error creating user:', err);
+    }
+  };
+
   const handleLogout = () => {
     authService.logout();
     navigate('/'); // Redirect to login page after logout
@@ -98,6 +132,64 @@ const UserManagementPage: React.FC = () => {
         <button onClick={handleLogout} className="btn btn-danger">{translate('logout')}</button>
       </div>
 
+      {/* Create User Form */}
+      {!showCreateForm ? (
+        <button onClick={() => {
+          setShowCreateForm(true);
+          setEditingUser(null);
+          setChangingPasswordForUser(null);
+        }} className="btn btn-primary mb-3">
+          {translate('create_new_user')}
+        </button>
+      ) : (
+        <div className="card mb-4">
+          <div className="card-header">{translate('create_new_user')}</div>
+          <div className="card-body">
+            <form onSubmit={handleCreateUser}>
+              <div className="mb-3">
+                <label htmlFor="newUsername" className="form-label">{translate('username')}</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="newUsername"
+                  value={newUsername}
+                  onChange={(e) => setNewUsername(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="mb-3">
+                <label htmlFor="newPassword" className="form-label">{translate('password')}</label>
+                <input
+                  type="password"
+                  className="form-control"
+                  id="newPassword"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="mb-3">
+                <label htmlFor="newLevel" className="form-label">{translate('level_label')}</label>
+                <input
+                  type="number"
+                  className="form-control"
+                  id="newLevel"
+                  value={newLevel}
+                  onChange={(e) => setNewLevel(e.target.value)}
+                  min="1"
+                  max="10"
+                />
+              </div>
+              <button type="submit" className="btn btn-success me-2">{translate('create_user')}</button>
+              <button type="button" className="btn btn-secondary" onClick={() => setShowCreateForm(false)}>
+                {translate('cancel')}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit User Form */}
       {editingUser && (
         <div className="card mb-4">
           <div className="card-header">{translate('edit_user')}</div>
@@ -142,6 +234,19 @@ const UserManagementPage: React.FC = () => {
         </div>
       )}
 
+      {/* Change User Password Form */}
+      {changingPasswordForUser && (
+        <div className="mb-4">
+          <ChangePasswordForm 
+            userId={changingPasswordForUser.id} 
+            onPasswordChanged={() => {
+              setChangingPasswordForUser(null);
+              fetchUsers(); // Refresh users after password change
+            }}
+          />
+        </div>
+      )}
+
       {users.length === 0 ? (
         <div className="alert alert-info">{translate('no_users_found')}</div>
       ) : (
@@ -153,8 +258,28 @@ const UserManagementPage: React.FC = () => {
                 <small className="text-muted">ID: {user.id} | {translate('level_label')}: {user.level}</small>
               </div>
               <div>
-                <button onClick={() => handleEditClick(user)} className="btn btn-warning btn-sm me-2">{translate('edit')}</button>
-                <button onClick={() => handleDeleteUser(user.id)} className="btn btn-danger btn-sm">{translate('delete')}</button>
+                <button 
+                  onClick={() => {
+                    setChangingPasswordForUser(user);
+                    setEditingUser(null);
+                    setShowCreateForm(false);
+                  }} 
+                  className="btn btn-info btn-sm me-2"
+                >
+                  {translate('change_password')}
+                </button>
+                <button 
+                  onClick={() => handleEditClick(user)} 
+                  className="btn btn-warning btn-sm me-2"
+                >
+                  {translate('edit')}
+                </button>
+                <button 
+                  onClick={() => handleDeleteUser(user.id)} 
+                  className="btn btn-danger btn-sm"
+                >
+                  {translate('delete')}
+                </button>
               </div>
             </li>
           ))}

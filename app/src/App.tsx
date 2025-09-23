@@ -9,6 +9,7 @@ import AdminDashboardPage from './pages/AdminDashboardPage';
 import CategoryManagementPage from './pages/CategoryManagementPage';
 import UserManagementPage from './pages/UserManagementPage';
 import AssignedTasksPage from './pages/AssignedTasksPage';
+import UserProfilePage from './pages/UserProfilePage'; // Import the new UserProfilePage
 import authService from './services/authService';
 import { getPointsForNextLevel } from './utils/levelUtils';
 
@@ -24,7 +25,8 @@ const Breadcrumbs: React.FC = () => {
     'admin': translate('admin_dashboard'),
     'categories': translate('manage_categories'),
     'users': translate('manage_users'),
-    'assigned-tasks': translate('my_assigned_tasks')
+    'assigned-tasks': translate('my_assigned_tasks'),
+    'profile': translate('user_profile')
   };
 
   return (
@@ -140,52 +142,57 @@ function AppContent() {
   return (
     <div className="App">
       <a href="#main-content" className="skip-link">Skip to main content</a>
-      <nav className={`navbar navbar-expand-lg ${darkMode ? 'navbar-dark' : 'navbar-light'}`}>
-        <div className="container-fluid">
-          <Link className="navbar-brand" to="/dashboard">{translate('app_name')}</Link>
-          <div className="collapse navbar-collapse">
-            <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-              <li className="nav-item">
-                <Link className="nav-link" to="/dashboard">{translate('dashboard')}</Link>
-              </li>
-            </ul>
-            <span className="navbar-text me-3">
-              {translate('level')}: {userLevel} | {translate('points')}: {userPoints}
-            </span>
-            {userLevel < 10 && (
-              <div className="progress me-3" style={{ width: '150px' }}>
-                <div
-                  className="progress-bar bg-info"
-                  role="progressbar"
-                  style={{ width: `${progressPercentage}%` }}
-                  aria-valuenow={progressPercentage}
-                  aria-valuemin={0}
-                  aria-valuemax={100}
-                ></div>
+      {location.pathname !== '/' && (
+        <nav className={`navbar navbar-expand-lg ${darkMode ? 'navbar-dark' : 'navbar-light'}`}>
+          <div className="container-fluid">
+            <Link className="navbar-brand" to="/dashboard">{translate('app_name')}</Link>
+            <div className="collapse navbar-collapse">
+              <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+                <li className="nav-item">
+                  <Link className="nav-link" to="/dashboard">{translate('dashboard')}</Link>
+                </li>
+              </ul>
+              <span className="navbar-text me-3">
+                {translate('level')}: {userLevel} | {translate('points')}: {userPoints}
+              </span>
+              {userLevel < 10 && (
+                <div className="progress me-3" style={{ width: '150px' }}>
+                  <div
+                    className="progress-bar bg-info"
+                    role="progressbar"
+                    style={{ width: `${progressPercentage}%` }}
+                    aria-valuenow={progressPercentage}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                  ></div>
+                </div>
+              )}
+              <div className="d-flex align-items-center">
+                <Link to="/profile" className="btn btn-outline-secondary btn-sm me-2">
+                  {translate('user_profile')}
+                </Link>
+                <select
+                  className="form-select form-select-sm me-2"
+                  value={language}
+                  onChange={(e) => setLanguage(e.target.value)}
+                  aria-label="Language selector"
+                >
+                  <option value="en">English</option>
+                  <option value="fr">Français</option>
+                </select>
+                <button 
+                  className="dark-mode-toggle"
+                  onClick={toggleDarkMode}
+                  aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
+                  title={darkMode ? "Switch to light mode" : "Switch to dark mode"}
+                >
+                  {darkMode ? '☀️' : '🌙'}
+                </button>
               </div>
-            )}
-            <div className="d-flex align-items-center">
-              <select
-                className="form-select form-select-sm me-2"
-                value={language}
-                onChange={(e) => setLanguage(e.target.value)}
-                aria-label="Language selector"
-              >
-                <option value="en">English</option>
-                <option value="fr">Français</option>
-              </select>
-              <button 
-                className="dark-mode-toggle"
-                onClick={toggleDarkMode}
-                aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
-                title={darkMode ? "Switch to light mode" : "Switch to dark mode"}
-              >
-                {darkMode ? '☀️' : '🌙'}
-              </button>
             </div>
           </div>
-        </div>
-      </nav>
+        </nav>
+      )}
       <main id="main-content" className="container-fluid">
         {location.pathname !== '/' && <Breadcrumbs />}
         <Routes>
@@ -195,6 +202,7 @@ function AppContent() {
           <Route path="/admin/categories" element={<CategoryManagementPage />} />
           <Route path="/admin/users" element={<UserManagementPage />} />
           <Route path="/assigned-tasks" element={<AssignedTasksPage />} />
+          <Route path="/profile" element={<UserProfilePage />} />
         </Routes>
       </main>
     </div>

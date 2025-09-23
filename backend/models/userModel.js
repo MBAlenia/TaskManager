@@ -17,7 +17,7 @@ const findUserByUsername = async (username) => {
 };
 
 const findUserById = async (id) => {
-    const result = await pool.query('SELECT id, username, level, points FROM users WHERE id = $1', [id]);
+    const result = await pool.query('SELECT id, username, password, level, points FROM users WHERE id = $1', [id]);
     return result.rows[0];
 };
 
@@ -46,11 +46,11 @@ const updateUser = async (id, userData) => {
   const values = [];
   let queryIndex = 1;
 
-  if (username !== undefined) { fields.push(`username = ${queryIndex++}`); values.push(username); }
-  if (level !== undefined) { fields.push(`level = ${queryIndex++}`); values.push(level); }
+  if (username !== undefined) { fields.push(`username = $${queryIndex++}`); values.push(username); }
+  if (level !== undefined) { fields.push(`level = $${queryIndex++}`); values.push(level); }
   if (password !== undefined) {
     const hashedPassword = await bcrypt.hash(password, 10);
-    fields.push(`password = ${queryIndex++}`);
+    fields.push(`password = $${queryIndex++}`);
     values.push(hashedPassword);
   }
 
@@ -58,7 +58,7 @@ const updateUser = async (id, userData) => {
     return null; // No fields to update
   }
 
-  const query = `UPDATE users SET ${fields.join(', ')} WHERE id = ${queryIndex} RETURNING *`;
+  const query = `UPDATE users SET ${fields.join(', ')} WHERE id = $${queryIndex} RETURNING *`;
   values.push(id);
 
   const result = await pool.query(query, values);

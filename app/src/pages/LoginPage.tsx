@@ -38,8 +38,7 @@ const LoginPage: React.FC = () => {
       <div className="card">
         <div className="card-body">
           <div className="login-header">
-            <h1>{translate('login_page_title')}</h1>
-            <p>Welcome to TaskQuest</p>
+            <h1>{translate('app_name')}</h1>
           </div>
           
           {errorMessage && <div className="alert alert-danger" role="alert">{errorMessage}</div>}
@@ -55,6 +54,7 @@ const LoginPage: React.FC = () => {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 autoComplete="username"
+                required
               />
             </div>
             <div className="form-group">
@@ -66,6 +66,7 @@ const LoginPage: React.FC = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 autoComplete="current-password"
+                required
               />
             </div>
             <button type="submit" className="btn btn-primary">{translate('login_button')}</button>

@@ -1,0 +1,61 @@
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:13
+    container_name: taskquest_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: taskquest
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/database.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - taskquest_network
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: taskquest_backend
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: taskquest
+      DB_USER: postgres
+      DB_PASSWORD: password
+    depends_on:
+      - db
+    networks:
+      - taskquest_network
+
+  # Frontend Application
+  frontend:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    container_name: taskquest_frontend
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - taskquest_network
+
+# Volumes for persistent data
+volumes:
+  postgres_data:
+
+# Networks for service communication
+networks:
+  taskquest_network:
+    driver: bridge

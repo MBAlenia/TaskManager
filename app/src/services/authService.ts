@@ -28,7 +28,7 @@ const getCurrentUserId = () => {
   const token = localStorage.getItem('userToken');
   if (token) {
     try {
-      const decoded: { id: number } = jwtDecode(token);
+      const decoded: { id: number, username: string } = jwtDecode(token);
       return decoded.id;
     } catch (error) {
       console.error('Error decoding token:', error);
@@ -48,6 +48,20 @@ const getCurrentUserLevel = () => {
   return userLevel ? parseInt(userLevel) : 1; // Default to level 1
 };
 
+const getCurrentUsername = () => {
+  const token = localStorage.getItem('userToken');
+  if (token) {
+    try {
+      const decoded: { id: number, username: string } = jwtDecode(token);
+      return decoded.username;
+    } catch (error) {
+      console.error('Error decoding token:', error);
+      return null;
+    }
+  }
+  return null;
+};
+
 const saveUserData = (token: string, level: number, points: number) => {
   localStorage.setItem('userToken', token);
   localStorage.setItem('userLevel', level.toString());
@@ -61,6 +75,7 @@ const authService = {
   getCurrentUserId,
   getCurrentUserPoints,
   getCurrentUserLevel,
+  getCurrentUsername, // Add the new function
   saveUserData,
 };
 

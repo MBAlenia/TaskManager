@@ -398,7 +398,6 @@ const DashboardPage: React.FC = () => {
   const handleAssignToMe = async (taskId: number) => {
     try {
       await taskService.assignTask(taskId);
-      
       // Refresh tasks after assignment
       const tasksResponse = await taskService.getTasks();
       setTasks(tasksResponse.data);
@@ -412,7 +411,6 @@ const DashboardPage: React.FC = () => {
   const handleUnassignMe = async (taskId: number) => {
     try {
       await taskService.unassignTask(taskId);
-      
       // Refresh tasks after unassignment
       const tasksResponse = await taskService.getTasks();
       setTasks(tasksResponse.data);
@@ -422,83 +420,164 @@ const DashboardPage: React.FC = () => {
     }
   };
 
-  // Handle comments
-  const handleToggleComments = async (taskId: number) => {
-    if (expandedTaskComments === taskId) {
-      setExpandedTaskComments(null);
-    } else {
-      setExpandedTaskComments(taskId);
-      try {
-        const commentsResponse = await commentService.getCommentsByTaskId(taskId);
-        setCommentsByTaskId(prev => ({
-          ...prev,
-          [taskId]: commentsResponse.data
-        }));
-      } catch (err) {
-        console.error('Error fetching comments:', err);
-      }
-    }
-  };
-
+  // Handle comment creation
   const handleCreateComment = async (taskId: number) => {
     if (!newCommentContent.trim()) return;
-    
+
     try {
       await commentService.createComment(taskId, newCommentContent);
       setNewCommentContent('');
       
-      // Refresh comments
+      // Refresh comments for this task
       const commentsResponse = await commentService.getCommentsByTaskId(taskId);
       setCommentsByTaskId(prev => ({
         ...prev,
         [taskId]: commentsResponse.data
       }));
     } catch (err) {
-      console.error('Error creating comment:', err);
+      setError('Failed to add comment.');
+      console.error('Error adding comment:', err);
     }
   };
 
+  // Handle comment deletion
+  const handleDeleteComment = async (commentId: number, taskId: number) => {
+    try {
+      await commentService.deleteComment(commentId);
+      
+      // Refresh comments for this task
+      const commentsResponse = await commentService.getCommentsByTaskId(taskId);
+      setCommentsByTaskId(prev => ({
+        ...prev,
+        [taskId]: commentsResponse.data
+      }));
+    } catch (err) {
+      setError('Failed to delete comment.');
+      console.error('Error deleting comment:', err);
+    }
+  };
+
+  // Toggle comments visibility
+  const handleToggleComments = (taskId: number) => {
+    setExpandedTaskComments(expandedTaskComments === taskId ? null : taskId);
+    
+    // Load comments if not already loaded
+    if (expandedTaskComments !== taskId && !commentsByTaskId[taskId]) {
+      commentService.getCommentsByTaskId(taskId)
+        .then(response => {
+          setCommentsByTaskId(prev => ({
+            ...prev,
+            [taskId]: response.data
+          }));
+        })
+        .catch(err => {
+          setError('Failed to load comments.');
+          console.error('Error loading comments:', err);
+        });
+    }
+  };
+
+  // Handle logout
   const handleLogout = () => {
     authService.logout();
-    navigate('/');
+    navigate('/'); // Redirect to login page
   };
 
-  // Filter tasks based on search term and filters
-  const filteredTasks = tasks.filter(task => {
-    const matchesSearch = 
-      task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      task.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (task.category_id && categories.find(cat => cat.id === task.category_id)?.name.toLowerCase().includes(searchTerm.toLowerCase()));
-    
-    const matchesStatus = !filterStatus || task.status === filterStatus;
-    const matchesCategory = !filterCategory || task.category_id === parseInt(filterCategory);
-    const matchesAssignee = !filterAssignee || task.assignee_id === parseInt(filterAssignee);
-    
-    return matchesSearch && matchesStatus && matchesCategory && matchesAssignee;
-  });
+  // Filter and sort tasks
+  const filteredTasks = tasks
+    .filter(task => {
+      // Search term filter
+      if (searchTerm) {
+        const lowerSearch = searchTerm.toLowerCase();
+        const matchesTitle = task.title.toLowerCase().includes(lowerSearch);
+        const matchesDescription = task.description.toLowerCase().includes(lowerSearch);
+        const matchesCategory = categories.find(cat => cat.id === task.category_id)?.name?.toLowerCase().includes(lowerSearch);
+        if (!matchesTitle && !matchesDescription && !matchesCategory) {
+          return false;
+        }
+      }
+      
+      // Status filter
+      if (filterStatus && task.status !== filterStatus) {
+        return false;
+      }
+      
+      // Category filter
+      if (filterCategory && task.category_id !== parseInt(filterCategory)) {
+        return false;
+      }
+      
+      // Assignee filter (admin only)
+      if (filterAssignee && task.assignee_id !== parseInt(filterAssignee)) {
+        return false;
+      }
+      
+      return true;
+    })
+    .sort((a, b) => {
+      let aValue: any, bValue: any;
+      
+      switch (sortField) {
+        case 'due_date':
+          aValue = a.due_date ? new Date(a.due_date).getTime() : 0;
+          bValue = b.due_date ? new Date(b.due_date).getTime() : 0;
+          break;
+        case 'points':
+          aValue = a.points;
+          bValue = b.points;
+          break;
+        case 'level':
+          aValue = a.level;
+          bValue = b.level;
+          break;
+        case 'title':
+          aValue = a.title.toLowerCase();
+          bValue = b.title.toLowerCase();
+          break;
+        default: // created_at
+          aValue = new Date(a.created_at).getTime();
+          bValue = new Date(b.created_at).getTime();
+      }
+      
+      if (sortOrder === 'asc') {
+        return aValue > bValue ? 1 : -1;
+      } else {
+        return aValue < bValue ? 1 : -1;
+      }
+    });
 
-  // Helper function to check permissions
+  // Check if user can edit a task
   const canEditTask = (task: Task) => {
-    return userIsAdmin || task.creator_id === currentUserId || task.assignee_id === currentUserId;
+    // Admins can edit any task
+    if (userIsAdmin) return true;
+    
+    // Task creator can edit their own tasks
+    if (task.creator_id === currentUserId) return true;
+    
+    // Assignee can edit if task is open
+    if (task.assignee_id === currentUserId && task.status === 'ouvert') return true;
+    
+    return false;
   };
 
+  // Check if user can delete a task
   const canDeleteTask = (task: Task) => {
-    return userIsAdmin || task.creator_id === currentUserId;
+    // Admins can delete any task
+    if (userIsAdmin) return true;
+    
+    // Task creator can delete their own tasks
+    if (task.creator_id === currentUserId) return true;
+    
+    return false;
   };
 
+  // Check if task is editable by assignee
   const isTaskEditableByAssignee = (task: Task) => {
-    return task.assignee_id === currentUserId && !userIsAdmin && task.creator_id !== currentUserId;
+    return task.assignee_id === currentUserId && task.status === 'ouvert';
   };
 
   if (loading) {
-    return (
-      <div className="container mt-5">
-        <div className="d-flex justify-content-center">
-          <div className="loading-spinner"></div>
-          <span className="ms-2">Loading tasks...</span>
-        </div>
-      </div>
-    );
+    return <div className="container mt-5">{translate('loading_tasks')}</div>;
   }
 
   if (error) {
@@ -524,6 +603,9 @@ const DashboardPage: React.FC = () => {
       <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap">
         <h1>{translate('dashboard')}</h1>
         <div className="mt-2 mt-md-0">
+          <Link to="/profile" className="btn btn-outline-secondary me-2 mb-2 mb-md-0">
+            {translate('user_profile')}
+          </Link>
           {userIsAdmin && (
             <Link to="/admin" className="btn btn-info me-2 mb-2 mb-md-0">{translate('admin_dashboard')}</Link>
           )}
