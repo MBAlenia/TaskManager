@@ -1,0 +1,22 @@
+{
+  "name": "taskquest",
+  "version": "1.0.0",
+  "description": "TaskQuest - A gamified task management application",
+  "main": "index.js",
+  "scripts": {
+    "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
+    "start:backend": "cd backend && node index.js",
+    "start:frontend": "cd app && npx react-scripts start",
+    "build": "cd app && npx react-scripts build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "dependencies": {
+    "react-scripts": "^5.0.1"
+  }
+}
