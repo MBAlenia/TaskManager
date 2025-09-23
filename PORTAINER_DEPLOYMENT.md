@@ -40,7 +40,11 @@ If you're using Traefik for reverse proxy (as configured in the docker-compose-p
    - Replace `taskquest.yourdomain.com` with your frontend domain
    - Replace `taskquest-api.yourdomain.com` with your backend API domain
 
-2. Ensure your DNS records point to the server running Portainer/Traefik
+2. For alenia.io deployment, the domains are already configured as:
+   - Frontend: `taskquest.academy.alenia.io`
+   - Backend API: `taskquest-api.academy.alenia.io`
+
+3. Ensure your DNS records point to the server running Portainer/Traefik
 
 ### 4. Initial Setup
 

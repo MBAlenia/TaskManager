@@ -27,11 +27,12 @@ services:
       DB_USER: ${POSTGRES_USER_PROD}
       DB_PASSWORD: ${POSTGRES_PASSWORD_PROD}
       DB_NAME: ${POSTGRES_DB_PROD}
+      APP_URL: https://taskquest.academy.alenia.io
     networks:
       - app-network
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.taskquest_api.rule=Host(`taskquest-api.yourdomain.com`)"
+      - "traefik.http.routers.taskquest_api.rule=Host(`taskquest-api.academy.alenia.io`)"
       - "traefik.http.routers.taskquest_api.entrypoints=websecure"
       - "traefik.http.routers.taskquest_api.tls.certresolver=myresolver"
       - "traefik.http.routers.taskquest_api.service=svc_taskquest_api"
@@ -45,11 +46,13 @@ services:
     restart: always
     depends_on:
       - backend
+    environment:
+      - REACT_APP_API_URL=https://taskquest-api.academy.alenia.io/api
     networks:
       - app-network
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.taskquest.rule=Host(`taskquest.yourdomain.com`)"
+      - "traefik.http.routers.taskquest.rule=Host(`taskquest.academy.alenia.io`)"
       - "traefik.http.routers.taskquest.entrypoints=websecure"
       - "traefik.http.routers.taskquest.tls.certresolver=myresolver"
       - "traefik.http.routers.taskquest.service=svc_taskquest"

@@ -1,6 +1,7 @@
 import axios from 'axios';
+import config from '../config';
 
-const API_URL = 'http://localhost:3000/api/tasks'; // Base URL for tasks, comments are nested under tasks
+const API_URL = `${config.API_BASE_URL}/tasks`; // Base URL for tasks, comments are nested under tasks
 
 const getToken = () => {
   return localStorage.getItem('userToken');

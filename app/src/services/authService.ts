@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
+import config from '../config';
 
-const API_URL = 'http://localhost:3000/api/auth';
+const API_URL = `${config.API_BASE_URL}/auth`;
 
 const login = (username: string, password: string) => {
   return axios.post(`${API_URL}/login`, { username, password }).then(response => {
