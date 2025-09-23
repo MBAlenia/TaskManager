@@ -124,7 +124,7 @@ Thumbs.db
 Desktop.ini
 
 # Ignore everything except the project files
-*
+# *  # This line was causing all files to be ignored
 !/.gitignore
 !/app/
 !/backend/
