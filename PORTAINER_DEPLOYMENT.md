@@ -99,6 +99,7 @@ The PostgreSQL data is stored in a Docker volume. To backup:
 4. **Network errors**: Ensure services can communicate through Docker network
 5. **Authentication errors**: Verify JWT_SECRET is properly configured
 6. **pgAdmin not accessible**: Check if port 5050 is available and not blocked by firewall
+7. **Login issues**: Check that the frontend is correctly configured to communicate with the backend
 
 ### Connecting pgAdmin to PostgreSQL
 
@@ -137,6 +138,15 @@ Check logs in Portainer:
 
 ## Version Information
 
-Current version: 1.1.1
+Current version: 1.2.3
 
 For version history, see [CHANGELOG.md](CHANGELOG.md)
+
+### Environment Configuration
+
+The application automatically detects whether it's running in a Docker environment and configures the API connection accordingly:
+
+- In Docker environments: Uses relative paths (`/api`) for API calls which are proxied by nginx
+- In development environments: Uses the configured `REACT_APP_API_URL` environment variable
+
+This ensures proper connectivity both in local development and production deployments.

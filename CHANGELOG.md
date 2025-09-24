@@ -11,12 +11,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CORS error when accessing https://taskquest.academy.alenia.io/
 - Proper API URL configuration for production deployment
 - Ensured frontend uses relative path '/api' when REACT_APP_API_URL is not set
+- Fixed network connectivity issues in production Docker deployments
 
 ### Changed
 - Added more debugging logs to identify API URL configuration issues
 - Enhanced config.ts to log environment variables and window location
 - Improved frontend API call handling to work with nginx proxy
 - Added version display on login page for better deployment identification
+- Enhanced environment detection to properly configure API connections in Docker environments
+- Updated docker-compose files to include REACT_APP_DOCKER environment variable for proper environment detection
+
+### Added
+- REACT_APP_DOCKER environment variable to explicitly identify Docker environments
+- Documentation for environment configuration in PORTAINER_DEPLOYMENT.md
 
 ## [1.2.2] - 2025-09-24
 

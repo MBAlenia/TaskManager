@@ -1,7 +1,11 @@
 import axios from 'axios';
 import config from '../config';
 
-const API_URL = `${config.API_BASE_URL}/tasks`; // Base URL for tasks, comments are nested under tasks
+// Create an axios instance with default configuration
+const apiClient = axios.create({
+  baseURL: config.API_BASE_URL,
+  timeout: 10000,
+});
 
 // Helper function to handle API errors
 const handleApiError = (error: any) => {
@@ -34,14 +38,23 @@ const getToken = () => {
   return localStorage.getItem('userToken');
 };
 
+// Add a request interceptor to add the authorization header
+apiClient.interceptors.request.use(
+  (config) => {
+    const token = getToken();
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 const getCommentsByTaskId = async (taskId: number) => {
   try {
-    const token = getToken();
-    return await axios.get(`${API_URL}/${taskId}/comments`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    return await apiClient.get(`/tasks/${taskId}/comments`);
   } catch (error) {
     handleApiError(error);
   }
@@ -49,12 +62,7 @@ const getCommentsByTaskId = async (taskId: number) => {
 
 const createComment = async (taskId: number, content: string) => {
   try {
-    const token = getToken();
-    return await axios.post(`${API_URL}/${taskId}/comments`, { content }, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    return await apiClient.post(`/tasks/${taskId}/comments`, { content });
   } catch (error) {
     handleApiError(error);
   }
@@ -62,12 +70,7 @@ const createComment = async (taskId: number, content: string) => {
 
 const updateComment = async (commentId: number, content: string) => {
   try {
-    const token = getToken();
-    return await axios.put(`${API_URL}/comments/${commentId}`, { content }, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    return await apiClient.put(`/tasks/comments/${commentId}`, { content });
   } catch (error) {
     handleApiError(error);
   }
@@ -75,12 +78,7 @@ const updateComment = async (commentId: number, content: string) => {
 
 const deleteComment = async (commentId: number) => {
   try {
-    const token = getToken();
-    return await axios.delete(`${API_URL}/comments/${commentId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    return await apiClient.delete(`/tasks/comments/${commentId}`);
   } catch (error) {
     handleApiError(error);
   }

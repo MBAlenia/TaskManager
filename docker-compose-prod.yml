@@ -69,6 +69,7 @@ services:
       - backend
     environment:
       - REACT_APP_API_URL=https://taskquest-api.academy.alenia.io/api
+      - REACT_APP_DOCKER=true
     networks:
       - app-network
     labels:

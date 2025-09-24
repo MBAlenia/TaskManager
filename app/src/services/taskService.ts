@@ -1,7 +1,11 @@
 import axios from 'axios';
 import config from '../config';
 
-const API_URL = `${config.API_BASE_URL}/tasks`;
+// Create an axios instance with default configuration
+const apiClient = axios.create({
+  baseURL: config.API_BASE_URL,
+  timeout: 10000,
+});
 
 // Helper function to handle API errors
 const handleApiError = (error: any) => {
@@ -34,6 +38,20 @@ const getToken = () => {
   return localStorage.getItem('userToken');
 };
 
+// Add a request interceptor to add the authorization header
+apiClient.interceptors.request.use(
+  (config) => {
+    const token = getToken();
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 interface TaskFilterOptions {
   status?: string;
   category_id?: number;
@@ -44,11 +62,7 @@ interface TaskFilterOptions {
 
 const getTasks = async (options?: TaskFilterOptions) => {
   try {
-    const token = getToken();
-    return await axios.get(API_URL, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+    return await apiClient.get('/tasks', {
       params: options,
     });
   } catch (error) {
@@ -58,12 +72,7 @@ const getTasks = async (options?: TaskFilterOptions) => {
 
 const createTask = async (title: string, description: string, points: number, level: number, categoryId: number | null, dueDate: string | null) => {
   try {
-    const token = getToken();
-    return await axios.post(API_URL, { title, description, points, level, category_id: categoryId, due_date: dueDate }, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    return await apiClient.post('/tasks', { title, description, points, level, category_id: categoryId, due_date: dueDate });
   } catch (error) {
     handleApiError(error);
   }
@@ -71,12 +80,7 @@ const createTask = async (title: string, description: string, points: number, le
 
 const updateTask = async (id: number, taskData: any) => {
   try {
-    const token = getToken();
-    return await axios.put(`${API_URL}/${id}`, taskData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    return await apiClient.put(`/tasks/${id}`, taskData);
   } catch (error) {
     handleApiError(error);
   }
@@ -84,12 +88,7 @@ const updateTask = async (id: number, taskData: any) => {
 
 const deleteTask = async (id: number) => {
   try {
-    const token = getToken();
-    return await axios.delete(`${API_URL}/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    return await apiClient.delete(`/tasks/${id}`);
   } catch (error) {
     handleApiError(error);
   }
@@ -97,12 +96,7 @@ const deleteTask = async (id: number) => {
 
 const assignTask = async (id: number) => {
   try {
-    const token = getToken();
-    return await axios.put(`${API_URL}/${id}/assign`, {}, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    return await apiClient.put(`/tasks/${id}/assign`, {});
   } catch (error) {
     handleApiError(error);
   }
@@ -110,11 +104,7 @@ const assignTask = async (id: number) => {
 
 const getAssignedTasks = async (options?: TaskFilterOptions) => {
   try {
-    const token = getToken();
-    return await axios.get(`${API_URL}/assigned`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+    return await apiClient.get('/tasks/assigned', {
       params: options,
     });
   } catch (error) {
@@ -124,12 +114,7 @@ const getAssignedTasks = async (options?: TaskFilterOptions) => {
 
 const unassignTask = async (id: number) => {
   try {
-    const token = getToken();
-    return await axios.put(`${API_URL}/${id}/unassign`, {}, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    return await apiClient.put(`/tasks/${id}/unassign`, {});
   } catch (error) {
     handleApiError(error);
   }
@@ -137,12 +122,7 @@ const unassignTask = async (id: number) => {
 
 const completeTask = async (id: number) => {
   try {
-    const token = getToken();
-    return await axios.put(`${API_URL}/${id}/complete`, {}, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    return await apiClient.put(`/tasks/${id}/complete`, {});
   } catch (error) {
     handleApiError(error);
   }
@@ -150,12 +130,7 @@ const completeTask = async (id: number) => {
 
 const validateTask = async (id: number) => {
   try {
-    const token = getToken();
-    return await axios.put(`${API_URL}/${id}/validate`, {}, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    return await apiClient.put(`/tasks/${id}/validate`, {});
   } catch (error) {
     handleApiError(error);
   }

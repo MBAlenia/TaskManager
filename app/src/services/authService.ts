@@ -2,10 +2,14 @@ import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 import config from '../config';
 
-const API_URL = `${config.API_BASE_URL}/auth`;
+// Create an axios instance with default configuration
+const apiClient = axios.create({
+  baseURL: config.API_BASE_URL,
+  timeout: 10000,
+});
 
 // Log the API URL for debugging
-console.log('API_URL:', API_URL);
+console.log('API_BASE_URL from config:', config.API_BASE_URL);
 console.log('Window location:', window.location.href);
 console.log('Process env REACT_APP_API_URL:', process.env.REACT_APP_API_URL);
 
@@ -44,12 +48,10 @@ const handleApiError = (error: any) => {
 const login = async (username: string, password: string) => {
   try {
     // Log the full URL being used for debugging
-    const fullUrl = `${API_URL}/login`;
-    console.log('Making login request to:', fullUrl);
-    console.log('API_BASE_URL from config:', config.API_BASE_URL);
+    console.log('Making login request to /auth/login with base URL:', config.API_BASE_URL);
     
-    // Add a timeout to prevent hanging requests
-    const response = await axios.post(fullUrl, { username, password }, { timeout: 10000 });
+    // Use the axios instance with the correct base URL
+    const response = await apiClient.post('/auth/login', { username, password });
     if (response.data.token) {
       localStorage.setItem('userToken', response.data.token); // Store the token
       localStorage.setItem('userLevel', response.data.level.toString()); // Store the user level

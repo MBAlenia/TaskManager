@@ -1,7 +1,11 @@
 import axios from 'axios';
 import config from '../config';
 
-const API_URL = `${config.API_BASE_URL}/categories`;
+// Create an axios instance with default configuration
+const apiClient = axios.create({
+  baseURL: config.API_BASE_URL,
+  timeout: 10000,
+});
 
 // Helper function to handle API errors
 const handleApiError = (error: any) => {
@@ -34,14 +38,23 @@ const getToken = () => {
   return localStorage.getItem('userToken');
 };
 
+// Add a request interceptor to add the authorization header
+apiClient.interceptors.request.use(
+  (config) => {
+    const token = getToken();
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 const getAllCategories = async () => {
   try {
-    const token = getToken();
-    return await axios.get(API_URL, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    return await apiClient.get('/categories');
   } catch (error) {
     handleApiError(error);
   }
@@ -49,12 +62,7 @@ const getAllCategories = async () => {
 
 const createCategory = async (name: string, parentId: number | null = null) => {
   try {
-    const token = getToken();
-    return await axios.post(API_URL, { name, parent_id: parentId }, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    return await apiClient.post('/categories', { name, parent_id: parentId });
   } catch (error) {
     handleApiError(error);
   }
@@ -62,12 +70,7 @@ const createCategory = async (name: string, parentId: number | null = null) => {
 
 const updateCategory = async (id: number, name: string, parentId: number | null = null) => {
   try {
-    const token = getToken();
-    return await axios.put(`${API_URL}/${id}`, { name, parent_id: parentId }, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    return await apiClient.put(`/categories/${id}`, { name, parent_id: parentId });
   } catch (error) {
     handleApiError(error);
   }
@@ -75,12 +78,7 @@ const updateCategory = async (id: number, name: string, parentId: number | null 
 
 const deleteCategory = async (id: number) => {
   try {
-    const token = getToken();
-    return await axios.delete(`${API_URL}/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    return await apiClient.delete(`/categories/${id}`);
   } catch (error) {
     handleApiError(error);
   }

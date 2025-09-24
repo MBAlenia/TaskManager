@@ -1,7 +1,11 @@
 import axios from 'axios';
 import config from '../config';
 
-const API_URL = `${config.API_BASE_URL}/auth`;
+// Create an axios instance with default configuration
+const apiClient = axios.create({
+  baseURL: config.API_BASE_URL,
+  timeout: 10000,
+});
 
 // Helper function to handle API errors
 const handleApiError = (error: any) => {
@@ -34,14 +38,23 @@ const getToken = () => {
   return localStorage.getItem('userToken');
 };
 
+// Add a request interceptor to add the authorization header
+apiClient.interceptors.request.use(
+  (config) => {
+    const token = getToken();
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 const getAllUsers = async () => {
   try {
-    const token = getToken();
-    return await axios.get(`${API_URL}/users`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    return await apiClient.get('/auth/users');
   } catch (error) {
     handleApiError(error);
   }
@@ -49,12 +62,7 @@ const getAllUsers = async () => {
 
 const updateUser = async (id: number, userData: any) => {
   try {
-    const token = getToken();
-    return await axios.put(`${API_URL}/users/${id}`, userData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    return await apiClient.put(`/auth/users/${id}`, userData);
   } catch (error) {
     handleApiError(error);
   }
@@ -62,12 +70,7 @@ const updateUser = async (id: number, userData: any) => {
 
 const deleteUser = async (id: number) => {
   try {
-    const token = getToken();
-    return await axios.delete(`${API_URL}/users/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    return await apiClient.delete(`/auth/users/${id}`);
   } catch (error) {
     handleApiError(error);
   }
@@ -75,12 +78,7 @@ const deleteUser = async (id: number) => {
 
 const getCurrentUser = async () => {
   try {
-    const token = getToken();
-    return await axios.get(`${API_URL}/me`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    return await apiClient.get('/auth/me');
   } catch (error) {
     handleApiError(error);
   }
@@ -89,14 +87,9 @@ const getCurrentUser = async () => {
 // Updated function to change user's own password
 const changePassword = async (currentPassword: string, newPassword: string) => {
   try {
-    const token = getToken();
-    return await axios.put(`${API_URL}/me/password`, {
+    return await apiClient.put('/auth/me/password', {
       currentPassword,
       newPassword
-    }, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
     });
   } catch (error) {
     handleApiError(error);
@@ -106,13 +99,8 @@ const changePassword = async (currentPassword: string, newPassword: string) => {
 // Updated function for admins to change any user's password
 const changeUserPassword = async (id: number, newPassword: string) => {
   try {
-    const token = getToken();
-    return await axios.put(`${API_URL}/users/${id}/password`, {
+    return await apiClient.put(`/auth/users/${id}/password`, {
       newPassword
-    }, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
     });
   } catch (error) {
     handleApiError(error);
@@ -122,12 +110,7 @@ const changeUserPassword = async (id: number, newPassword: string) => {
 // New function to create users by admin
 const createUser = async (userData: any) => {
   try {
-    const token = getToken();
-    return await axios.post(`${API_URL}/users`, userData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    return await apiClient.post('/auth/users', userData);
   } catch (error) {
     handleApiError(error);
   }
