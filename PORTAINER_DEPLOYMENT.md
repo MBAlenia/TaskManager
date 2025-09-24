@@ -101,6 +101,7 @@ The PostgreSQL data is stored in a Docker volume. To backup:
 6. **pgAdmin not accessible**: Check if port 5050 is available and not blocked by firewall
 7. **Login issues**: Check that the frontend is correctly configured to communicate with the backend
 8. **404 errors**: Verify that the frontend files are properly built and served by nginx
+9. **Database schema errors**: Ensure the database initialization script is properly mounted
 
 ### Connecting pgAdmin to PostgreSQL
 
@@ -139,7 +140,7 @@ Check logs in Portainer:
 
 ## Version Information
 
-Current version: 1.2.6
+Current version: 1.2.7
 
 For version history, see [CHANGELOG.md](CHANGELOG.md)
 

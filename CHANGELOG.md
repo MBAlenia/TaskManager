@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.7] - 2025-09-24
+
+### Fixed
+- Database initialization issue in production by adding database.sql volume mount to postgres service
+- "relation users does not exist" error by ensuring proper database schema initialization
+
+### Changed
+- Added ./backend/database.sql:/docker-entrypoint-initdb.d/init.sql volume mount to postgres service in docker-compose-prod.yml
+
 ## [1.2.6] - 2025-09-24
 
 ### Fixed
