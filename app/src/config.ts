@@ -1,5 +1,6 @@
 const config = {
-  API_BASE_URL: process.env.REACT_APP_API_URL || 'http://localhost:3000/api'
+  // Use relative path for API requests so they go through nginx proxy
+  API_BASE_URL: process.env.REACT_APP_API_URL || '/api'
 };
 
 export default config;
