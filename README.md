@@ -38,7 +38,33 @@ TaskQuest is a gamified task management application that allows users to create,
    - Username: admin
    - Password: adminpassword
 
-## Deployment Scripts
+## Troubleshooting Common Issues
+
+### Login Problems
+If you encounter login issues:
+1. Verify you're using the correct credentials (admin/adminpassword)
+2. If you get a 401 Unauthorized error, reset the admin password:
+   ```bash
+   docker compose exec backend node reset_admin_password.js
+   ```
+3. Check backend logs for authentication errors:
+   ```bash
+   docker compose logs backend
+   ```
+
+### Database Connection Issues
+If the application can't connect to the database:
+1. Ensure the database container is running:
+   ```bash
+   docker compose ps
+   ```
+2. Check database logs for connection errors:
+   ```bash
+   docker compose logs db
+   ```
+3. Verify environment variables in docker-compose.yml match database configuration
+
+### Deployment Scripts
 
 For easier deployment, we provide scripts for both Unix-like systems and Windows:
 
@@ -46,6 +72,14 @@ For easier deployment, we provide scripts for both Unix-like systems and Windows
 - **Windows**: Run `deploy.bat`
 
 These scripts will automatically build and start all services, and provide status information once deployment is complete.
+
+## Production Deployment with Portainer
+
+For production deployment using Portainer:
+
+1. Use the `docker-compose-prod.yml` file
+2. Configure environment variables in Portainer
+3. Follow the detailed guide in [PORTAINER_DEPLOYMENT.md](PORTAINER_DEPLOYMENT.md)
 
 ## Services Overview
 
