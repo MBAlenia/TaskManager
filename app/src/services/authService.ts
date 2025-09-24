@@ -11,8 +11,11 @@ console.log('Process env REACT_APP_API_URL:', process.env.REACT_APP_API_URL);
 
 // Helper function to handle API errors
 const handleApiError = (error: any) => {
+  console.error('API Error:', error);
+  
   if (error.response) {
     // Server responded with error status
+    console.log('Error response:', error.response);
     switch (error.response.status) {
       case 400:
         return error.response.data.error || 'Invalid request data';
@@ -29,9 +32,11 @@ const handleApiError = (error: any) => {
     }
   } else if (error.request) {
     // Request was made but no response received
-    return 'Network error - please check your connection';
+    console.log('Error request:', error.request);
+    return 'Network error - please check your connection and ensure the backend service is running';
   } else {
     // Something else happened
+    console.log('Error message:', error.message);
     return error.message || 'An unexpected error occurred';
   }
 };
@@ -43,7 +48,8 @@ const login = async (username: string, password: string) => {
     console.log('Making login request to:', fullUrl);
     console.log('API_BASE_URL from config:', config.API_BASE_URL);
     
-    const response = await axios.post(fullUrl, { username, password });
+    // Add a timeout to prevent hanging requests
+    const response = await axios.post(fullUrl, { username, password }, { timeout: 10000 });
     if (response.data.token) {
       localStorage.setItem('userToken', response.data.token); // Store the token
       localStorage.setItem('userLevel', response.data.level.toString()); // Store the user level

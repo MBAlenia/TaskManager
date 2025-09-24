@@ -488,6 +488,13 @@ body.dark-mode .alert {
   margin-bottom: 0.5rem;
 }
 
+.version-info {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
 .login-header p {
   color: var(--text-secondary);
   font-size: 0.9375rem;

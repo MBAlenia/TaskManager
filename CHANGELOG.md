@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added more debugging logs to identify API URL configuration issues
 - Enhanced config.ts to log environment variables and window location
 - Improved frontend API call handling to work with nginx proxy
+- Added version display on login page for better deployment identification
 
 ## [1.2.2] - 2025-09-24
 

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import authService from '../services/authService';
 import { useLanguage } from '../context/LanguageContext';
+import packageInfo from '../../package.json';
 
 const LoginPage: React.FC = () => {
   const { translate } = useLanguage();
@@ -63,6 +64,7 @@ const LoginPage: React.FC = () => {
         <div className="card-body">
           <div className="login-header">
             <h1>{translate('app_name')}</h1>
+            <p className="version-info">Version {packageInfo.version}</p>
           </div>
           
           {errorMessage && <div className="alert alert-danger" role="alert">{errorMessage}</div>}

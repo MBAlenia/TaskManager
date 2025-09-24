@@ -13,6 +13,7 @@ TaskQuest is a gamified task management application that allows users to create,
 - Password change functionality for users and admins
 - User profile management
 - Database management with pgAdmin
+- Version display on login page
 
 ## Prerequisites
 
@@ -221,7 +222,9 @@ npm run build
 
 ## Versioning
 
-Current version: 1.1.1
+Current version: 1.2.3
+
+The application version is displayed on the login page for easy identification of the current deployment.
 
 ## License
 

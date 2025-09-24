@@ -9,7 +9,7 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: taskquest
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./backend/database.sql:/docker-entrypoint-initdb.d/init.sql
@@ -69,8 +69,6 @@ services:
       - "80:80"
     depends_on:
       - backend
-    environment:
-      - REACT_APP_API_URL=/api
     networks:
       - taskquest_network
 

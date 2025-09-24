@@ -1,4 +1,3 @@
-
 -- Create the users table
 CREATE TABLE users (
   id SERIAL PRIMARY KEY,
@@ -40,3 +39,8 @@ CREATE TABLE comments (
   content TEXT NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Insert default admin user
+-- Password is 'adminpassword' hashed with bcrypt
+INSERT INTO users (username, password, level) VALUES 
+('admin', '$2b$10$dIUUnlhxGdUUHWBtV/6h0uFr29IVA6aL98Md3RgadhW6/Tv/70oBO', 10);
