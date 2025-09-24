@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.1] - 2025-09-24
+
+### Fixed
+- Unexpected connection error when accessing https://taskquest.academy.alenia.io/
+- Hardcoded JWT secret in backend controllers and middleware
+- Nginx proxy configuration issues
+- Error handling in LoginPage component
+- Create admin script to work properly in Docker environment
+- Environment variable configuration for production deployment
+
+### Changed
+- Added JWT_SECRET environment variable support for secure token signing
+- Updated docker-compose files with proper environment variables
+- Enhanced documentation with JWT_SECRET information
+- Added BACKEND_URL environment variable for service communication
+
 ## [1.1.0] - 2025-09-24
 
 ### Added
