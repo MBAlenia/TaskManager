@@ -28,6 +28,8 @@ services:
       DB_PASSWORD: ${POSTGRES_PASSWORD_PROD}
       DB_NAME: ${POSTGRES_DB_PROD}
       APP_URL: https://taskquest.academy.alenia.io
+      JWT_SECRET: ${JWT_SECRET_PROD}
+      BACKEND_URL: http://backend:3000
     networks:
       - app-network
     labels:

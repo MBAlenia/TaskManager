@@ -19,6 +19,7 @@ In Portainer, go to:
    - `POSTGRES_USER_PROD`: postgres
    - `POSTGRES_PASSWORD_PROD`: [your_secure_password]
    - `POSTGRES_DB_PROD`: taskquest
+   - `JWT_SECRET_PROD`: [your_secure_jwt_secret]
 
 ### 2. Deploy Stack
 
@@ -89,6 +90,7 @@ The PostgreSQL data is stored in a Docker volume. To backup:
 2. **Database connection failed**: Verify environment variables and network connectivity
 3. **Permission denied errors**: Check file permissions in containers
 4. **Network errors**: Ensure services can communicate through Docker network
+5. **Authentication errors**: Verify JWT_SECRET is properly configured
 
 ### Logs
 
@@ -102,9 +104,10 @@ Check logs in Portainer:
 
 1. Change default passwords immediately after deployment
 2. Use strong, unique passwords for production
-3. Regularly update the application and base images
-4. Restrict access to Portainer UI with proper authentication
-5. Use HTTPS in production (Traefik configuration includes TLS settings)
+3. Use a strong JWT secret for token signing
+4. Regularly update the application and base images
+5. Restrict access to Portainer UI with proper authentication
+6. Use HTTPS in production (Traefik configuration includes TLS settings)
 
 ## Version Information
 

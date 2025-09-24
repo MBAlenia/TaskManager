@@ -28,7 +28,10 @@ const LoginPage: React.FC = () => {
       // Extract error message from different possible sources
       let errorMsg = 'An unexpected error occurred during login. Please try again.';
       
-      if (error.response) {
+      // Since authService now throws Error objects with messages, we can use error.message directly
+      if (error.message) {
+        errorMsg = error.message;
+      } else if (error.response) {
         // Axios error with response
         if (error.response.status === 401) {
           // Check if there's a specific error message from the backend
@@ -48,9 +51,6 @@ const LoginPage: React.FC = () => {
       } else if (error.request) {
         // Request was made but no response received
         errorMsg = 'Unable to connect to the server. Please check your network connection and ensure the application is running.';
-      } else if (error.message) {
-        // Generic error message
-        errorMsg = error.message;
       }
       
       setErrorMessage(errorMsg);

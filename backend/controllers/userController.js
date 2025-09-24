@@ -3,6 +3,9 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const { createErrorResponse, handleDatabaseError, validateInput } = require('../utils/errorHandler');
 
+// Use environment variable for JWT secret, with fallback to default
+const JWT_SECRET = process.env.JWT_SECRET || 'secret';
+
 const register = async (req, res) => {
   console.log('Register attempt:', req.body.username);
   
@@ -63,7 +66,7 @@ const login = async (req, res) => {
       return res.status(401).json(createErrorResponse(401, 'Invalid password'));
     }
     console.log('Password valid. Generating token...');
-    const token = jwt.sign({ id: user.id, username: user.username }, 'secret', { expiresIn: '1h' });
+    const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, { expiresIn: '1h' });
     console.log('Token generated. Login successful for:', username);
     res.json({ token, level: user.level, points: user.points });
   } catch (error) {

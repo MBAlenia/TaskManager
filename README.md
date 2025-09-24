@@ -107,6 +107,7 @@ The application can be configured using environment variables. When using Docker
 - `DB_NAME`: Database name (default: taskquest)
 - `DB_USER`: Database user (default: postgres)
 - `DB_PASSWORD`: Database password (default: password)
+- `JWT_SECRET`: Secret key for JWT token signing (default: secret)
 
 ## Database Setup
 

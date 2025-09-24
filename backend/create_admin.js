@@ -3,7 +3,9 @@ const axios = require('axios');
 // Create an initial admin user
 const createAdminUser = async () => {
   try {
-    const response = await axios.post('http://localhost:3000/api/auth/register', {
+    // Use the backend service name in Docker environment, fallback to localhost for local development
+    const apiUrl = process.env.BACKEND_URL || 'http://localhost:3000';
+    const response = await axios.post(`${apiUrl}/api/auth/register`, {
       username: 'admin',
       password: 'adminpassword',
       level: 10
