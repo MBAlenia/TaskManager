@@ -14,9 +14,8 @@ RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
 # Copy the rest of the application code
 COPY . .
 
-# Build the React app with environment variables
-ARG REACT_APP_API_URL
-ENV REACT_APP_API_URL=$REACT_APP_API_URL
+# Build the React app
+# Note: We're not setting REACT_APP_API_URL here to allow runtime configuration
 RUN npm run build
 
 # Use nginx to serve the built React app
