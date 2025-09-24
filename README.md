@@ -222,7 +222,7 @@ npm run build
 
 ## Versioning
 
-Current version: 1.2.8
+Current version: 1.2.9
 
 The application version is displayed on the login page for easy identification of the current deployment.
 

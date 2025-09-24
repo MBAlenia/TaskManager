@@ -42,10 +42,12 @@ If you're using Traefik for reverse proxy (as configured in the docker-compose-p
 1. Update the domain names in the labels section of docker-compose-prod.yml:
    - Replace `taskquest.yourdomain.com` with your frontend domain
    - Replace `taskquest-api.yourdomain.com` with your backend API domain
+   - Replace `pgadmin.taskquest.yourdomain.com` with your pgAdmin domain
 
 2. For alenia.io deployment, the domains are already configured as:
    - Frontend: `taskquest.academy.alenia.io`
    - Backend API: `taskquest-api.academy.alenia.io`
+   - pgAdmin: `pgadmin.taskquest.academy.alenia.io`
 
 3. Ensure your DNS records point to the server running Portainer/Traefik
 
@@ -60,7 +62,7 @@ After deployment:
 3. Change the admin password immediately after first login
 
 4. Access pgAdmin:
-   - URL: http://[your-server-ip]:5050
+   - URL: https://pgadmin.taskquest.academy.alenia.io (if using Traefik) or http://[your-server-ip]:5050
    - Default credentials: admin@taskquest.com / adminpassword
    - Change these credentials after first login
 
@@ -107,7 +109,7 @@ The PostgreSQL data is stored in a Docker volume. To backup:
 
 To connect pgAdmin to the PostgreSQL database:
 
-1. Login to pgAdmin at http://[your-server-ip]:5050
+1. Login to pgAdmin at https://pgadmin.taskquest.academy.alenia.io (if using Traefik) or http://[your-server-ip]:5050
 2. Click "Add New Server"
 3. In the "General" tab:
    - Name: TaskQuest DB
@@ -140,7 +142,7 @@ Check logs in Portainer:
 
 ## Version Information
 
-Current version: 1.2.8
+Current version: 1.2.9
 
 For version history, see [CHANGELOG.md](CHANGELOG.md)
 

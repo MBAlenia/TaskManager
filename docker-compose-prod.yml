@@ -29,6 +29,13 @@ services:
       - postgres
     networks:
       - app-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.taskquest_pgadmin.rule=Host(`pgadmin.taskquest.academy.alenia.io`)"
+      - "traefik.http.routers.taskquest_pgadmin.entrypoints=websecure"
+      - "traefik.http.routers.taskquest_pgadmin.tls.certresolver=myresolver"
+      - "traefik.http.routers.taskquest_pgadmin.service=svc_taskquest_pgadmin"
+      - "traefik.http.services.svc_taskquest_pgadmin.loadbalancer.server.port=80"
 
   backend:
     build:
