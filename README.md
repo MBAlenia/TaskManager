@@ -12,6 +12,7 @@ TaskQuest is a gamified task management application that allows users to create,
 - Admin panel for user management
 - Password change functionality for users and admins
 - User profile management
+- Database management with pgAdmin
 
 ## Prerequisites
 
@@ -34,10 +35,11 @@ TaskQuest is a gamified task management application that allows users to create,
 3. Access the application:
    - Frontend: http://localhost
    - Backend API: http://localhost:3000
+   - pgAdmin: http://localhost:5050
 
-4. Default admin credentials:
-   - Username: admin
-   - Password: adminpassword
+4. Default credentials:
+   - Application admin: admin / adminpassword
+   - pgAdmin: admin@taskquest.com / adminpassword
 
 ## Troubleshooting Common Issues
 
@@ -65,6 +67,18 @@ If the application can't connect to the database:
    ```
 3. Verify environment variables in docker-compose.yml match database configuration
 
+### pgAdmin Access Issues
+If you can't access pgAdmin:
+1. Ensure the pgadmin container is running:
+   ```bash
+   docker compose ps
+   ```
+2. Check if port 5050 is available and not blocked by firewall
+3. Verify pgAdmin logs:
+   ```bash
+   docker compose logs pgadmin
+   ```
+
 ### Network and Proxy Issues
 If you encounter network errors during development:
 1. Ensure both frontend and backend servers are running
@@ -90,11 +104,12 @@ For production deployment using Portainer:
 
 ## Services Overview
 
-The application consists of three main services:
+The application consists of four main services:
 
 1. **Database (PostgreSQL)**: Stores all application data
-2. **Backend (Node.js/Express)**: REST API for the application
-3. **Frontend (React)**: User interface
+2. **pgAdmin**: Database management tool for PostgreSQL
+3. **Backend (Node.js/Express)**: REST API for the application
+4. **Frontend (React)**: User interface
 
 ## Environment Variables
 
@@ -109,6 +124,11 @@ The application can be configured using environment variables. When using Docker
 - `DB_PASSWORD`: Database password (default: password)
 - `JWT_SECRET`: Secret key for JWT token signing (default: secret)
 
+### pgAdmin Environment Variables
+
+- `PGADMIN_DEFAULT_EMAIL`: Default email for pgAdmin login (default: admin@taskquest.com)
+- `PGADMIN_DEFAULT_PASSWORD`: Default password for pgAdmin login (default: adminpassword)
+
 ## Database Setup
 
 The database schema is automatically applied when the PostgreSQL container starts, using the `database.sql` file.
@@ -117,6 +137,23 @@ To manually run the database setup:
 ```bash
 docker compose exec backend npm run db:setup
 ```
+
+## Connecting to the Database with pgAdmin
+
+To connect pgAdmin to the PostgreSQL database:
+
+1. Access pgAdmin at http://localhost:5050
+2. Login with default credentials: admin@taskquest.com / adminpassword
+3. Click "Add New Server"
+4. In the "General" tab:
+   - Name: TaskQuest DB
+5. In the "Connection" tab:
+   - Host name/address: db
+   - Port: 5432
+   - Maintenance database: taskquest
+   - Username: postgres
+   - Password: password
+6. Click "Save"
 
 ## API Endpoints
 
@@ -155,9 +192,9 @@ docker compose exec backend npm run db:setup
 
 ### Running Locally
 
-1. Start the database:
+1. Start the database and pgAdmin:
    ```bash
-   docker compose up -d db
+   docker compose up -d db pgadmin
    ```
 
 2. Install backend dependencies and start the server:
@@ -184,7 +221,7 @@ npm run build
 
 ## Versioning
 
-Current version: 1.1.0
+Current version: 1.1.1
 
 ## License
 

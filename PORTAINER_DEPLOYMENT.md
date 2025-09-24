@@ -20,6 +20,8 @@ In Portainer, go to:
    - `POSTGRES_PASSWORD_PROD`: [your_secure_password]
    - `POSTGRES_DB_PROD`: taskquest
    - `JWT_SECRET_PROD`: [your_secure_jwt_secret]
+   - `PGADMIN_DEFAULT_EMAIL`: [your_pgadmin_email] (optional, defaults to admin@taskquest.com)
+   - `PGADMIN_DEFAULT_PASSWORD`: [your_pgadmin_password] (optional, defaults to adminpassword)
 
 ### 2. Deploy Stack
 
@@ -57,6 +59,11 @@ After deployment:
    - Password: adminpassword
 3. Change the admin password immediately after first login
 
+4. Access pgAdmin:
+   - URL: http://[your-server-ip]:5050
+   - Default credentials: admin@taskquest.com / adminpassword
+   - Change these credentials after first login
+
 ## Updating the Application
 
 To update the application:
@@ -91,12 +98,29 @@ The PostgreSQL data is stored in a Docker volume. To backup:
 3. **Permission denied errors**: Check file permissions in containers
 4. **Network errors**: Ensure services can communicate through Docker network
 5. **Authentication errors**: Verify JWT_SECRET is properly configured
+6. **pgAdmin not accessible**: Check if port 5050 is available and not blocked by firewall
+
+### Connecting pgAdmin to PostgreSQL
+
+To connect pgAdmin to the PostgreSQL database:
+
+1. Login to pgAdmin at http://[your-server-ip]:5050
+2. Click "Add New Server"
+3. In the "General" tab:
+   - Name: TaskQuest DB
+4. In the "Connection" tab:
+   - Host name/address: postgres (or taskquest-db in production)
+   - Port: 5432
+   - Maintenance database: taskquest
+   - Username: postgres (or your POSTGRES_USER_PROD value)
+   - Password: [your POSTGRES_PASSWORD_PROD value]
+5. Click "Save"
 
 ### Logs
 
 Check logs in Portainer:
 1. Go to **Containers**
-2. Find the relevant container (taskquest-frontend, taskquest-backend, or taskquest-db)
+2. Find the relevant container (taskquest-frontend, taskquest-backend, taskquest-db, or taskquest-pgadmin)
 3. Click on the container name
 4. View logs in the **Logs** tab
 
@@ -105,12 +129,14 @@ Check logs in Portainer:
 1. Change default passwords immediately after deployment
 2. Use strong, unique passwords for production
 3. Use a strong JWT secret for token signing
-4. Regularly update the application and base images
-5. Restrict access to Portainer UI with proper authentication
-6. Use HTTPS in production (Traefik configuration includes TLS settings)
+4. Change pgAdmin default credentials after first login
+5. Restrict access to pgAdmin by using firewall rules to limit access to specific IPs
+6. Regularly update the application and base images
+7. Restrict access to Portainer UI with proper authentication
+8. Use HTTPS in production (Traefik configuration includes TLS settings)
 
 ## Version Information
 
-Current version: 1.1.0
+Current version: 1.1.1
 
 For version history, see [CHANGELOG.md](CHANGELOG.md)

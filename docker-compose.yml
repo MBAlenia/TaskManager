@@ -16,6 +16,23 @@ services:
     networks:
       - taskquest_network
 
+  # pgAdmin - Database Management Tool
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: taskquest_pgadmin
+    restart: always
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@taskquest.com
+      PGADMIN_DEFAULT_PASSWORD: adminpassword
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      - db
+    networks:
+      - taskquest_network
+
   # Backend API
   backend:
     build:
@@ -56,6 +73,7 @@ services:
 # Volumes for persistent data
 volumes:
   postgres_data:
+  pgadmin_data:
 
 # Networks for service communication
 networks:
