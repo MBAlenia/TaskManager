@@ -61,8 +61,6 @@ services:
     build:
       context: ./app
       dockerfile: Dockerfile
-      args:
-        - REACT_APP_API_URL=/api
     container_name: taskquest_frontend
     restart: always
     ports:

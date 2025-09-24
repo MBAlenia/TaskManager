@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.6] - 2025-09-24
+
+### Fixed
+- Production frontend 404 error by removing hardcoded API URL from docker-compose files
+- Ensured consistent environment configuration across all deployment methods
+
+### Changed
+- Removed `REACT_APP_API_URL` from docker-compose-prod.yml to prevent overriding runtime configuration
+- Removed `REACT_APP_API_URL` build argument from docker-compose.yml for consistency
+
 ## [1.2.5] - 2025-09-24
 
 ### Fixed

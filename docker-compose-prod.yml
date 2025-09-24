@@ -61,14 +61,11 @@ services:
     build:
       context: ./app
       dockerfile: Dockerfile
-      args:
-        - REACT_APP_API_URL=https://taskquest-api.academy.alenia.io/api
     container_name: taskquest-frontend
     restart: always
     depends_on:
       - backend
     environment:
-      - REACT_APP_API_URL=https://taskquest-api.academy.alenia.io/api
       - REACT_APP_DOCKER=true
     networks:
       - app-network
