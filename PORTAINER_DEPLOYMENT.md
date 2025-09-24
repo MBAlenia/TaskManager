@@ -75,6 +75,58 @@ To update the application:
 3. If you have new code, update the repository first
 4. Click **Pull and redeploy** to fetch the latest code and restart services
 
+## Production Fix Scripts
+
+To help with common production issues, we've provided fix scripts:
+
+- **Windows**: `fix-production.bat`
+- **Linux/Unix**: `fix-production.sh`
+
+These scripts will:
+1. Pull the latest code from the repository
+2. Update the stack in Portainer
+3. Check service status and logs
+4. Apply common fixes for database and connectivity issues
+
+To use these scripts:
+1. Ensure you're in the TaskQuest root directory
+2. Run the appropriate script for your OS
+3. Follow the prompts to complete the fix process
+
+## Database Initialization Scripts
+
+If you encounter database issues or need to reinitialize the database with default data:
+
+### SQL Script
+For direct SQL execution, use `init-database.sql`:
+```sql
+-- Run this directly on your PostgreSQL database
+\i init-database.sql
+```
+
+### Programmatic Scripts
+Alternatively, you can use the programmatic scripts:
+
+- **Windows**: `init-db.bat`
+- **Linux/Unix**: `init-db.sh`
+- **Direct Node.js**: `node init-database.js`
+
+These scripts will:
+1. Create all required tables if they don't exist
+2. Insert the default admin user if missing
+3. Add default categories if none exist
+4. Verify the database structure
+
+To use these scripts:
+1. Ensure you're in the TaskQuest root directory
+2. Set the required environment variables (DB_HOST, DB_NAME, DB_USER, DB_PASSWORD)
+3. Run the appropriate script for your OS
+
+Alternatively, you can execute the script directly with Node.js:
+```bash
+node init-database.js
+```
+
 ## Backup and Recovery
 
 ### Database Backup
@@ -142,7 +194,7 @@ Check logs in Portainer:
 
 ## Version Information
 
-Current version: 1.2.9
+Current version: 1.2.11
 
 For version history, see [CHANGELOG.md](CHANGELOG.md)
 

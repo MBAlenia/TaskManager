@@ -95,6 +95,43 @@ For easier deployment, we provide scripts for both Unix-like systems and Windows
 
 These scripts will automatically build and start all services, and provide status information once deployment is complete.
 
+### Production Fix Scripts
+
+For fixing common production issues, we provide dedicated scripts:
+
+- **Unix/Linux/macOS**: Run `./fix-production.sh`
+- **Windows**: Run `fix-production.bat`
+
+These scripts will help with:
+- Pulling latest code updates
+- Redeploying the application via Portainer
+- Checking service status and logs
+- Applying common fixes for database and connectivity issues
+
+### Database Initialization Scripts
+
+If you encounter database issues or need to reinitialize the database with default data:
+
+#### SQL Script
+For direct SQL execution, use `init-database.sql`:
+```bash
+# Connect to your PostgreSQL database and run:
+\i init-database.sql
+```
+
+#### Programmatic Scripts
+Alternatively, you can use the programmatic scripts:
+
+- **Unix/Linux/macOS**: Run `./init-db.sh`
+- **Windows**: Run `init-db.bat`
+- **Direct Node.js**: `node init-database.js`
+
+These scripts will:
+- Create all required tables if they don't exist
+- Insert the default admin user if missing
+- Add default categories if none exist
+- Verify the database structure
+
 ## Production Deployment with Portainer
 
 For production deployment using Portainer:
@@ -137,6 +174,19 @@ The database schema is automatically applied when the PostgreSQL container start
 To manually run the database setup:
 ```bash
 docker compose exec backend npm run db:setup
+```
+
+To initialize or reinitialize the database with the database scripts:
+```bash
+# Using the SQL script (connect to PostgreSQL directly)
+\i init-database.sql
+
+# Using the programmatic scripts
+./init-db.sh  # Unix/Linux/macOS
+init-db.bat   # Windows
+
+# Or directly with Node.js
+node init-database.js
 ```
 
 ## Connecting to the Database with pgAdmin
@@ -222,7 +272,7 @@ npm run build
 
 ## Versioning
 
-Current version: 1.2.9
+Current version: 1.2.11
 
 The application version is displayed on the login page for easy identification of the current deployment.
 

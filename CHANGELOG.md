@@ -5,6 +5,37 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.12] - 2025-09-24
+
+### Added
+- Simple SQL database initialization script for fixing missing data issues in production
+- `init-database.sql` - Pure SQL script to create tables and insert default data
+- Script uses `IF NOT EXISTS` clauses to safely run multiple times
+- Includes verification queries to confirm successful initialization
+- Added documentation for SQL script usage in README.md and PORTAINER_DEPLOYMENT.md
+
+## [1.2.11] - 2025-09-24
+
+### Added
+- Database initialization scripts to fix missing data issues in production
+- `init-database.js` - Node.js script to initialize database with required tables and default data
+- `init-db.sh` - Shell script for Unix/Linux/macOS environments
+- `init-db.bat` - Batch script for Windows environments
+- Scripts can create tables, insert default data, and verify database structure
+- Added documentation for database initialization scripts in README.md and PORTAINER_DEPLOYMENT.md
+
+## [1.2.10] - 2025-09-24
+
+### Added
+- Production fix scripts for easier deployment and troubleshooting
+- `fix-production.sh` for Unix/Linux/macOS environments
+- `fix-production.bat` for Windows environments
+- Scripts automate common production fixes including code updates, stack redeployment, and service checks
+
+### Changed
+- Updated PORTAINER_DEPLOYMENT.md with information about production fix scripts
+- Enhanced README.md with documentation for production fix scripts
+
 ## [1.2.9] - 2025-09-24
 
 ### Fixed
@@ -163,7 +194,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 401 Unauthorized error during login
 - Database connection issues in Docker environment
 
-## [1.0.0] - 2025-09-23
+## [1.0.0] - 2025-09-24
 
 ### Added
 - Full task management functionality
