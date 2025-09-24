@@ -54,6 +54,7 @@ const login = async (req, res) => {
   try {
     console.log('Searching for user:', username);
     const user = await userModel.findUserByUsername(username);
+    console.log('Database query result:', user);
     if (!user) {
       console.log('User not found:', username);
       return res.status(404).json(createErrorResponse(404, 'User not found'));

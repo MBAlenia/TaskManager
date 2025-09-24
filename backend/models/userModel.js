@@ -17,9 +17,12 @@ const createUser = async (username, password, level) => {
 
 const findUserByUsername = async (username) => {
   try {
+    console.log('Executing database query for user:', username);
     const result = await pool.query('SELECT id, username, password, level, points FROM users WHERE username = $1', [username]);
+    console.log('Database query result for user', username, ':', result.rows);
     return result.rows[0];
   } catch (error) {
+    console.error('Database error when searching for user', username, ':', error);
     // Re-throw the error to be handled by the controller
     throw error;
   }
