@@ -25,10 +25,23 @@ const LoginPage: React.FC = () => {
       navigate('/dashboard'); // Redirect to dashboard
     } catch (error: any) {
       console.error('Login failed:', error);
-      if (error.response && error.response.data && error.response.data.message) {
-        setErrorMessage(error.response.data.message);
+      if (error.response) {
+        // Server responded with error status
+        if (error.response.status === 401) {
+          setErrorMessage('Invalid username or password. Please try again.');
+        } else if (error.response.status === 404) {
+          setErrorMessage('User not found. Please check your username.');
+        } else if (error.response.data && error.response.data.message) {
+          setErrorMessage(error.response.data.message);
+        } else {
+          setErrorMessage(`Login failed with status: ${error.response.status}`);
+        }
+      } else if (error.request) {
+        // Request was made but no response received
+        setErrorMessage('Unable to connect to the server. Please check your network connection and ensure the application is running.');
       } else {
-        setErrorMessage('An unexpected error occurred during login.');
+        // Something else happened
+        setErrorMessage('An unexpected error occurred during login. Please try again.');
       }
     }
   };
