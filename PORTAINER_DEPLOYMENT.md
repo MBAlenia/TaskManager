@@ -138,15 +138,10 @@ Check logs in Portainer:
 
 ## Version Information
 
-Current version: 1.2.4
+Current version: 1.2.5
 
 For version history, see [CHANGELOG.md](CHANGELOG.md)
 
 ### Environment Configuration
 
-The application automatically detects whether it's running in a Docker environment and configures the API connection accordingly:
-
-- In Docker environments: Uses relative paths (`/api`) for API calls which are proxied by nginx
-- In development environments: Uses the configured `REACT_APP_API_URL` environment variable
-
-This ensures proper connectivity both in local development and production deployments.
+The application now uses relative paths (`/api`) for all API calls, which are properly proxied by nginx in Docker environments. This ensures consistent connectivity both in local development and production deployments.

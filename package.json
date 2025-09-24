@@ -1,6 +1,6 @@
 {
   "name": "taskquest",
-  "version": "1.2.4",
+  "version": "1.2.5",
   "description": "TaskQuest - A gamified task management application",
   "main": "index.js",
   "scripts": {

@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.5] - 2025-09-24
+
+### Fixed
+- Production API connectivity issues by removing hardcoded API URL in Docker build
+- Forced use of relative paths (`/api`) for all API calls to ensure proper nginx proxying
+
+### Changed
+- Modified frontend Dockerfile to not set `REACT_APP_API_URL` during build process
+- Simplified config.ts to always use relative paths for API calls
+
 ## [1.2.4] - 2025-09-24
 
 ### Changed
