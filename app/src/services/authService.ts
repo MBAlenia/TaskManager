@@ -4,6 +4,9 @@ import config from '../config';
 
 const API_URL = `${config.API_BASE_URL}/auth`;
 
+// Log the API URL for debugging
+console.log('API_URL:', API_URL);
+
 // Helper function to handle API errors
 const handleApiError = (error: any) => {
   if (error.response) {
@@ -33,7 +36,11 @@ const handleApiError = (error: any) => {
 
 const login = async (username: string, password: string) => {
   try {
-    const response = await axios.post(`${API_URL}/login`, { username, password });
+    // Log the full URL being used for debugging
+    const fullUrl = `${API_URL}/login`;
+    console.log('Making login request to:', fullUrl);
+    
+    const response = await axios.post(fullUrl, { username, password });
     if (response.data.token) {
       localStorage.setItem('userToken', response.data.token); // Store the token
       localStorage.setItem('userLevel', response.data.level.toString()); // Store the user level
