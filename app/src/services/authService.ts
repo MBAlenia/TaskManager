@@ -6,6 +6,8 @@ const API_URL = `${config.API_BASE_URL}/auth`;
 
 // Log the API URL for debugging
 console.log('API_URL:', API_URL);
+console.log('Window location:', window.location.href);
+console.log('Process env REACT_APP_API_URL:', process.env.REACT_APP_API_URL);
 
 // Helper function to handle API errors
 const handleApiError = (error: any) => {
@@ -39,6 +41,7 @@ const login = async (username: string, password: string) => {
     // Log the full URL being used for debugging
     const fullUrl = `${API_URL}/login`;
     console.log('Making login request to:', fullUrl);
+    console.log('API_BASE_URL from config:', config.API_BASE_URL);
     
     const response = await axios.post(fullUrl, { username, password });
     if (response.data.token) {
