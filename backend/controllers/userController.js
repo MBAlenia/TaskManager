@@ -38,8 +38,7 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
   console.log('Login request received.');
-  console.log('Request body:', req.body);
-  console.log('Login attempt:', req.body.username);
+  console.log('Login attempt for username:', req.body.username);
   
   // Validate input
   const validationError = validateInput(req.body, {

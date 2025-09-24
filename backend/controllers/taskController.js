@@ -68,7 +68,7 @@ const assignTask = async (req, res) => {
 const updateTask = async (req, res) => {
   console.log('Update task request received.');
   console.log('Task ID:', req.params.id);
-  console.log('Request body:', req.body);
+  // REMOVED SECURITY VULNERABILITY: Do not log sensitive information like request body
   try {
     const taskId = req.params.id;
     
@@ -107,7 +107,7 @@ const updateTask = async (req, res) => {
 
     console.log('Calling taskModel.updateTask...');
     const updatedTask = await taskModel.updateTask(taskId, req.body);
-    console.log('taskModel.updateTask returned:', updatedTask);
+    console.log('taskModel.updateTask returned task ID:', updatedTask.id);
     if (!updatedTask) {
       console.log('Task not found for update:', taskId);
       return res.status(404).json(createErrorResponse(404, 'Task not found'));
