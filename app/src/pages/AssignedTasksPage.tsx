@@ -49,13 +49,20 @@ const AssignedTasksPage: React.FC = () => {
 
   const fetchAssignedTasks = useCallback(async () => {
     try {
+      setLoading(true);
+      setError(null);
+      
       const response = await taskService.getAssignedTasks({
         status: filterStatus || undefined,
         category_id: filterCategory ? parseInt(filterCategory) : undefined,
         sort_field: sortField,
         sort_order: sortOrder,
       });
-      setTasks(response.data);
+      
+      // Add null check for response
+      if (response && response.data) {
+        setTasks(response.data);
+      }
     } catch (err: any) {
       setError('Failed to fetch assigned tasks.');
       console.error('Error fetching assigned tasks:', err);
@@ -67,7 +74,10 @@ const AssignedTasksPage: React.FC = () => {
   const fetchCategories = useCallback(async () => {
     try {
       const response = await categoryService.getAllCategories();
-      setCategories(response.data);
+      // Add null check for response
+      if (response && response.data) {
+        setCategories(response.data);
+      }
     } catch (err: any) {
       console.error('Error fetching categories:', err);
     }
@@ -77,7 +87,10 @@ const AssignedTasksPage: React.FC = () => {
     if (userIsAdmin) { // Only fetch users if admin
       try {
         const response = await userService.getAllUsers();
-        setUsers(response.data);
+        // Add null check for response
+        if (response && response.data) {
+          setUsers(response.data);
+        }
       } catch (err: any) {
         console.error('Error fetching users:', err);
       }

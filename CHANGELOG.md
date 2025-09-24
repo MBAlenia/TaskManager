@@ -5,6 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2025-09-24
+
+### Added
+- Password change functionality for users and admins
+- User profile page with password change capability
+- Docker deployment configuration with proper networking
+- Production deployment guide for Portainer
+- Standardized error handling utilities
+- Proxy configuration for development environment
+
+### Changed
+- Improved login page to only show application name and login fields
+- Enhanced error handling with more specific error messages
+- Updated API URL configuration to work with nginx proxy
+- Refactored frontend service files to handle API errors consistently
+- Improved proxy configuration for both development and production environments
+
+### Fixed
+- Network error during login by configuring proper API proxy
+- Route conflicts in Express server
+- TypeScript errors in frontend components
+- Login page header issue
+- 401 Unauthorized error during login
+- Database connection issues in Docker environment
+
 ## [1.0.0] - 2025-09-23
 
 ### Added

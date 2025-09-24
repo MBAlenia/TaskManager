@@ -25,24 +25,35 @@ const LoginPage: React.FC = () => {
       navigate('/dashboard'); // Redirect to dashboard
     } catch (error: any) {
       console.error('Login failed:', error);
+      // Extract error message from different possible sources
+      let errorMsg = 'An unexpected error occurred during login. Please try again.';
+      
       if (error.response) {
-        // Server responded with error status
+        // Axios error with response
         if (error.response.status === 401) {
-          setErrorMessage('Invalid username or password. Please try again.');
+          // Check if there's a specific error message from the backend
+          const backendErrorMessage = error.response.data?.error;
+          if (backendErrorMessage) {
+            errorMsg = backendErrorMessage;
+          } else {
+            errorMsg = 'Invalid username or password. Please try again.';
+          }
         } else if (error.response.status === 404) {
-          setErrorMessage('User not found. Please check your username.');
-        } else if (error.response.data && error.response.data.message) {
-          setErrorMessage(error.response.data.message);
+          errorMsg = 'User not found. Please check your username.';
+        } else if (error.response.data && error.response.data.error) {
+          errorMsg = error.response.data.error;
         } else {
-          setErrorMessage(`Login failed with status: ${error.response.status}`);
+          errorMsg = `Login failed with status: ${error.response.status}`;
         }
       } else if (error.request) {
         // Request was made but no response received
-        setErrorMessage('Unable to connect to the server. Please check your network connection and ensure the application is running.');
-      } else {
-        // Something else happened
-        setErrorMessage('An unexpected error occurred during login. Please try again.');
+        errorMsg = 'Unable to connect to the server. Please check your network connection and ensure the application is running.';
+      } else if (error.message) {
+        // Generic error message
+        errorMsg = error.message;
       }
+      
+      setErrorMessage(errorMsg);
     }
   };
 

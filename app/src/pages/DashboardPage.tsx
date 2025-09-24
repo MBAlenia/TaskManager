@@ -57,6 +57,10 @@ const DashboardPage: React.FC = () => {
   const [newTaskAutoSave, setNewTaskAutoSave] = useState<boolean>(false);
   const [editTaskAutoSave, setEditTaskAutoSave] = useState<boolean>(false);
 
+  // Comment editing states
+  const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
+  const [editingCommentText, setEditingCommentText] = useState<string>('');
+
   // State for filtering and sorting
   const [filterStatus, setFilterStatus] = useState<string>('');
   const [filterCategory, setFilterCategory] = useState<string>('');
@@ -80,18 +84,31 @@ const DashboardPage: React.FC = () => {
 
   // Fetch tasks, categories, and users
   useEffect(() => {
-    const fetchAllData = async () => {
+    const fetchData = async () => {
       try {
-        const tasksResponse = await taskService.getTasks();
-        const categoriesResponse = await categoryService.getAllCategories();
+        setLoading(true);
+        setError(null);
         
-        setTasks(tasksResponse.data);
-        setCategories(categoriesResponse.data);
+        // Fetch tasks, categories, and users in parallel
+        const [tasksResponse, categoriesResponse] = await Promise.all([
+          taskService.getTasks(),
+          categoryService.getAllCategories()
+        ]);
         
+        // Add null checks for responses
+        if (tasksResponse && tasksResponse.data) {
+          setTasks(tasksResponse.data);
+        }
+        if (categoriesResponse && categoriesResponse.data) {
+          setCategories(categoriesResponse.data);
+        }
+
         // Only fetch users if the current user is an admin
         if (authService.isAdmin()) {
           const usersResponse = await userService.getAllUsers();
-          setUsers(usersResponse.data);
+          if (usersResponse && usersResponse.data) {
+            setUsers(usersResponse.data);
+          }
         }
       } catch (err) {
         setError('Failed to load data.');
@@ -101,7 +118,7 @@ const DashboardPage: React.FC = () => {
       }
     };
 
-    fetchAllData();
+    fetchData();
   }, []);
 
   // Listen for keyboard shortcut event
@@ -255,6 +272,7 @@ const DashboardPage: React.FC = () => {
     }
     
     setIsSubmitting(true);
+    setError(null);
     try {
       await taskService.createTask(
         newTaskTitle,
@@ -264,6 +282,8 @@ const DashboardPage: React.FC = () => {
         newTaskCategoryId ? parseInt(newTaskCategoryId) : null,
         newTaskDueDate || null
       );
+
+      // Reset form
       setNewTaskTitle('');
       setNewTaskDescription('');
       setNewTaskPoints(0);
@@ -271,12 +291,12 @@ const DashboardPage: React.FC = () => {
       setNewTaskCategoryId('');
       setNewTaskDueDate('');
       setShowCreateForm(false);
-      setNewTaskAutoSave(false);
-      localStorage.removeItem('taskquest_new_task_draft'); // Clear draft
-      
+
       // Refresh tasks after creation
       const tasksResponse = await taskService.getTasks();
-      setTasks(tasksResponse.data);
+      if (tasksResponse && tasksResponse.data) {
+        setTasks(tasksResponse.data);
+      }
     } catch (err: any) {
       setError('Failed to create task.');
       console.error('Error creating task:', err);
@@ -307,24 +327,24 @@ const DashboardPage: React.FC = () => {
     }
     
     setIsSubmitting(true);
+    setError(null);
     try {
       await taskService.updateTask(editingTask.id, {
         title: editTaskTitle,
         description: editTaskDescription,
         points: editTaskPoints,
         level: editTaskLevel,
-        status: editTaskStatus,
-        category_id: editTaskCategoryId ? parseInt(editTaskCategoryId) : null,
-        assignee_id: editTaskAssigneeId ? parseInt(editTaskAssigneeId) : null,
-        due_date: editTaskDueDate || null,
+        category_id: editTaskCategoryId ? parseInt(editTaskCategoryId) : undefined,
+        due_date: editTaskDueDate || undefined,
       });
-      setEditingTask(null); // Exit edit mode
-      setEditTaskAutoSave(false);
-      localStorage.removeItem('taskquest_edit_task_draft'); // Clear draft
-      
+
+      setEditingTask(null);
+
       // Refresh tasks after update
       const tasksResponse = await taskService.getTasks();
-      setTasks(tasksResponse.data);
+      if (tasksResponse && tasksResponse.data) {
+        setTasks(tasksResponse.data);
+      }
     } catch (err: any) {
       setError('Failed to update task.');
       console.error('Error updating task:', err);
@@ -355,24 +375,26 @@ const DashboardPage: React.FC = () => {
       
       // Refresh tasks after completion
       const tasksResponse = await taskService.getTasks();
-      setTasks(tasksResponse.data);
-      
+      if (tasksResponse && tasksResponse.data) {
+        setTasks(tasksResponse.data);
+      }
+
       setShowCompletionAnimation(true);
       setTimeout(() => setShowCompletionAnimation(false), 3000);
 
       // Check for level up
       const userResponse = await userService.getCurrentUser();
-      const userData = userResponse.data;
-      authService.saveUserData(
-        localStorage.getItem('userToken') || '',
-        userData.level,
-        userData.points
-      );
-      
-      if (userData.level > currentUserLevel) {
-        setLevelUpMessage(`Congratulations! You've leveled up to level ${userData.level}!`);
-        setShowLevelUpAnimation(true);
-        setTimeout(() => setShowLevelUpAnimation(false), 3000);
+      if (userResponse && userResponse.data) {
+        const userData = userResponse.data;
+        authService.saveUserData(
+          localStorage.getItem('userToken') || '',
+          userData.level,
+          userData.points
+        );
+        
+        // Update localStorage directly instead of using userContext
+        localStorage.setItem('userLevel', userData.level.toString());
+        localStorage.setItem('userPoints', userData.points.toString());
       }
     } catch (err) {
       setError('Failed to complete task.');
@@ -387,20 +409,59 @@ const DashboardPage: React.FC = () => {
       
       // Refresh tasks after validation
       const tasksResponse = await taskService.getTasks();
-      setTasks(tasksResponse.data);
+      if (tasksResponse && tasksResponse.data) {
+        setTasks(tasksResponse.data);
+      }
     } catch (err) {
       setError('Failed to validate task.');
       console.error('Error validating task:', err);
     }
   };
 
-  // Handle task assignment
-  const handleAssignToMe = async (taskId: number) => {
+  // Handle task assignment (admin only)
+  const handleAssignTask = async (taskId: number) => {
     try {
       await taskService.assignTask(taskId);
+      
       // Refresh tasks after assignment
       const tasksResponse = await taskService.getTasks();
-      setTasks(tasksResponse.data);
+      if (tasksResponse && tasksResponse.data) {
+        setTasks(tasksResponse.data);
+      }
+    } catch (err) {
+      setError('Failed to assign task.');
+      console.error('Error assigning task:', err);
+    }
+  };
+
+  // Handle task unassignment
+  const handleUnassignTask = async (taskId: number) => {
+    try {
+      await taskService.unassignTask(taskId);
+      
+      // Refresh tasks after unassignment
+      const tasksResponse = await taskService.getTasks();
+      if (tasksResponse && tasksResponse.data) {
+        setTasks(tasksResponse.data);
+      }
+    } catch (err) {
+      setError('Failed to unassign task.');
+      console.error('Error unassigning task:', err);
+    }
+  };
+
+  // Handle task assignment to current user
+  const handleAssignToMe = async (taskId: number) => {
+    if (!currentUserId) return;
+    
+    try {
+      await taskService.assignTask(taskId);
+      
+      // Refresh tasks after assignment
+      const tasksResponse = await taskService.getTasks();
+      if (tasksResponse && tasksResponse.data) {
+        setTasks(tasksResponse.data);
+      }
     } catch (err) {
       setError('Failed to assign task.');
       console.error('Error assigning task:', err);
@@ -411,9 +472,12 @@ const DashboardPage: React.FC = () => {
   const handleUnassignMe = async (taskId: number) => {
     try {
       await taskService.unassignTask(taskId);
+      
       // Refresh tasks after unassignment
       const tasksResponse = await taskService.getTasks();
-      setTasks(tasksResponse.data);
+      if (tasksResponse && tasksResponse.data) {
+        setTasks(tasksResponse.data);
+      }
     } catch (err) {
       setError('Failed to unassign task.');
       console.error('Error unassigning task:', err);
@@ -421,19 +485,18 @@ const DashboardPage: React.FC = () => {
   };
 
   // Handle comment creation
-  const handleCreateComment = async (taskId: number) => {
-    if (!newCommentContent.trim()) return;
+  const handleCreateComment = async (taskId: number, commentText: string) => {
+    if (!commentText.trim()) return;
 
     try {
-      await commentService.createComment(taskId, newCommentContent);
-      setNewCommentContent('');
-      
-      // Refresh comments for this task
-      const commentsResponse = await commentService.getCommentsByTaskId(taskId);
-      setCommentsByTaskId(prev => ({
-        ...prev,
-        [taskId]: commentsResponse.data
-      }));
+      const response = await commentService.createComment(taskId, commentText);
+      if (response && response.data) {
+        setCommentsByTaskId(prev => ({
+          ...prev,
+          [taskId]: [...(prev[taskId] || []), response.data]
+        }));
+      }
+      setNewCommentContent(''); // Clear the comment input
     } catch (err) {
       setError('Failed to add comment.');
       console.error('Error adding comment:', err);
@@ -444,16 +507,35 @@ const DashboardPage: React.FC = () => {
   const handleDeleteComment = async (commentId: number, taskId: number) => {
     try {
       await commentService.deleteComment(commentId);
-      
-      // Refresh comments for this task
-      const commentsResponse = await commentService.getCommentsByTaskId(taskId);
       setCommentsByTaskId(prev => ({
         ...prev,
-        [taskId]: commentsResponse.data
+        [taskId]: (prev[taskId] || []).filter(comment => comment.id !== commentId)
       }));
     } catch (err) {
       setError('Failed to delete comment.');
       console.error('Error deleting comment:', err);
+    }
+  };
+
+  // Handle comment editing
+  const handleEditComment = async (commentId: number, taskId: number, newText: string) => {
+    if (!newText.trim()) return;
+
+    try {
+      const response = await commentService.updateComment(commentId, newText);
+      if (response && response.data) {
+        setCommentsByTaskId(prev => ({
+          ...prev,
+          [taskId]: (prev[taskId] || []).map(comment =>
+            comment.id === commentId ? response.data : comment
+          )
+        }));
+      }
+      setEditingCommentId(null);
+      setEditingCommentText('');
+    } catch (err) {
+      setError('Failed to update comment.');
+      console.error('Error updating comment:', err);
     }
   };
 
@@ -465,10 +547,13 @@ const DashboardPage: React.FC = () => {
     if (expandedTaskComments !== taskId && !commentsByTaskId[taskId]) {
       commentService.getCommentsByTaskId(taskId)
         .then(response => {
-          setCommentsByTaskId(prev => ({
-            ...prev,
-            [taskId]: response.data
-          }));
+          // Add null check for response
+          if (response && response.data) {
+            setCommentsByTaskId(prev => ({
+              ...prev,
+              [taskId]: response.data
+            }));
+          }
         })
         .catch(err => {
           setError('Failed to load comments.');
@@ -802,7 +887,10 @@ const DashboardPage: React.FC = () => {
                       sort_field: sortField,
                       sort_order: sortOrder,
                     });
-                    setTasks(tasksResponse.data);
+                    // Add null check for tasksResponse
+                    if (tasksResponse && tasksResponse.data) {
+                      setTasks(tasksResponse.data);
+                    }
                   } catch (err) {
                     setError('Failed to filter tasks.');
                     console.error('Error filtering tasks:', err);

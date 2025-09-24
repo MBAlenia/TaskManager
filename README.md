@@ -11,6 +11,7 @@ TaskQuest is a gamified task management application that allows users to create,
 - Comments on tasks
 - Admin panel for user management
 - Password change functionality for users and admins
+- User profile management
 
 ## Prerequisites
 
@@ -64,6 +65,12 @@ If the application can't connect to the database:
    ```
 3. Verify environment variables in docker-compose.yml match database configuration
 
+### Network and Proxy Issues
+If you encounter network errors during development:
+1. Ensure both frontend and backend servers are running
+2. Check that the proxy configuration is correctly set up
+3. Verify API requests are being properly forwarded to the backend
+
 ### Deployment Scripts
 
 For easier deployment, we provide scripts for both Unix-like systems and Windows:
@@ -115,6 +122,8 @@ docker compose exec backend npm run db:setup
 ### Authentication
 - `POST /api/auth/register` - Register a new user
 - `POST /api/auth/login` - Login user
+- `GET /api/auth/me` - Get current user info
+- `PUT /api/auth/me/password` - Change current user's password
 
 ### User Management (Admin only)
 - `GET /api/auth/users` - Get all users
@@ -122,10 +131,6 @@ docker compose exec backend npm run db:setup
 - `PUT /api/auth/users/:userId/password` - Change a user's password
 - `PUT /api/auth/users/:userId` - Update a user
 - `DELETE /api/auth/users/:userId` - Delete a user
-
-### Current User
-- `GET /api/auth/me` - Get current user info
-- `PUT /api/auth/me/password` - Change current user's password
 
 ### Tasks
 - `GET /api/tasks` - Get all tasks
@@ -178,7 +183,7 @@ npm run build
 
 ## Versioning
 
-Current version: 1.0.0
+Current version: 1.1.0
 
 ## License
 

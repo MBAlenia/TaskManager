@@ -10,24 +10,24 @@ const handleApiError = (error: any) => {
     // Server responded with error status
     switch (error.response.status) {
       case 400:
-        throw new Error(error.response.data.error || 'Invalid request data');
+        return error.response.data.error || 'Invalid request data';
       case 401:
-        throw new Error(error.response.data.error || 'Authentication failed');
+        return error.response.data.error || 'Authentication failed';
       case 403:
-        throw new Error(error.response.data.error || 'Access denied');
+        return error.response.data.error || 'Access denied';
       case 404:
-        throw new Error(error.response.data.error || 'Resource not found');
+        return error.response.data.error || 'Resource not found';
       case 500:
-        throw new Error(error.response.data.error || 'Server error occurred');
+        return error.response.data.error || 'Server error occurred';
       default:
-        throw new Error(error.response.data.error || `Server error: ${error.response.status}`);
+        return error.response.data.error || `Server error: ${error.response.status}`;
     }
   } else if (error.request) {
     // Request was made but no response received
-    throw new Error('Network error - please check your connection');
+    return 'Network error - please check your connection';
   } else {
     // Something else happened
-    throw new Error('An unexpected error occurred');
+    return error.message || 'An unexpected error occurred';
   }
 };
 
@@ -41,7 +41,9 @@ const login = async (username: string, password: string) => {
     }
     return response;
   } catch (error) {
-    handleApiError(error);
+    // Instead of throwing, we'll create a proper error object with the message
+    const errorMessage = handleApiError(error);
+    throw new Error(errorMessage);
   }
 };
 

@@ -28,7 +28,10 @@ const CategoryManagementPage: React.FC = () => {
   const fetchCategories = async () => {
     try {
       const response = await categoryService.getAllCategories();
-      setCategories(response.data);
+      // Add null check for response
+      if (response && response.data) {
+        setCategories(response.data);
+      }
     } catch (err: any) {
       setError('Failed to fetch categories.');
       console.error('Error fetching categories:', err);

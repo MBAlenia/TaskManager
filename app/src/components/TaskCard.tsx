@@ -21,7 +21,7 @@ interface TaskCardProps {
   onDeleteTask: (taskId: number) => void;
   onToggleComments: (taskId: number) => void;
   onCommentChange: (content: string) => void;
-  onCreateComment: (taskId: number) => void;
+  onCreateComment: (taskId: number, commentText: string) => void;
   canEditTask: (task: Task) => boolean;
   canDeleteTask: (task: Task) => boolean;
   isTaskEditableByAssignee: (task: Task) => boolean;
@@ -191,7 +191,7 @@ const TaskCard: React.FC<TaskCardProps> = memo(({
                 rows={2}
               ></textarea>
               <button 
-                onClick={() => onCreateComment(task.id)} 
+                onClick={() => onCreateComment(task.id, newCommentContent)} 
                 className="btn btn-primary btn-sm"
               >
                 Add Comment

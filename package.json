@@ -17,6 +17,7 @@
     "concurrently": "^8.2.2"
   },
   "dependencies": {
+    "http-proxy-middleware": "^3.0.5",
     "react-scripts": "^5.0.1"
   }
 }

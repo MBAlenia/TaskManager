@@ -88,6 +88,7 @@ The PostgreSQL data is stored in a Docker volume. To backup:
 1. **Application not accessible**: Check Traefik configuration and DNS settings
 2. **Database connection failed**: Verify environment variables and network connectivity
 3. **Permission denied errors**: Check file permissions in containers
+4. **Network errors**: Ensure services can communicate through Docker network
 
 ### Logs
 
@@ -104,3 +105,9 @@ Check logs in Portainer:
 3. Regularly update the application and base images
 4. Restrict access to Portainer UI with proper authentication
 5. Use HTTPS in production (Traefik configuration includes TLS settings)
+
+## Version Information
+
+Current version: 1.1.0
+
+For version history, see [CHANGELOG.md](CHANGELOG.md)

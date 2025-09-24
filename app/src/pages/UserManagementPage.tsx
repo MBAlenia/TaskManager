@@ -39,7 +39,10 @@ const UserManagementPage: React.FC = () => {
   const fetchUsers = async () => {
     try {
       const response = await userService.getAllUsers();
-      setUsers(response.data);
+      // Add null check for response
+      if (response && response.data) {
+        setUsers(response.data);
+      }
     } catch (err: any) {
       setError('Failed to fetch users.');
       console.error('Error fetching users:', err);
